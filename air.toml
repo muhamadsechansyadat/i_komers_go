@@ -1,0 +1,8 @@
+[build]
+include = [
+  "**/*.go",
+]
+
+# Setelah build selesai, jalankan aplikasi dengan nama binary yang dihasilkan
+[run]
+args = ["./i_komers_go"]
