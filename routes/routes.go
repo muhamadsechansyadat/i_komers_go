@@ -21,10 +21,32 @@ func SetupRoutes(db *gorm.DB) *gin.Engine {
 		// Send a JSON response with the message "Hello, world"
 		c.JSON(200, gin.H{"message": "Hello, world"})
 	})
-	r.POST("/register", controllers.RegisterHandler)
-	r.POST("/login", controllers.LoginHandler)
 
-	r.GET("/products", controllers.GetAllProductsHandler)
-	r.POST("/product", controllers.CreateProductsHandler)
+	// r.GET("/products", controllers.GetAllProductsHandler)
+	// r.POST("/product", controllers.CreateProductsHandler)
+	// r.GET("/product/:id", controllers.GetOneData)
+	// r.GET("/uploads/images/product/:filename", controllers.LoadImageProduct)
+	v1 := r.Group("/v1")
+	{
+		authGroup := v1.Group("/auth")
+		{
+			authGroup.POST("/register", controllers.RegisterHandler)
+			authGroup.POST("/login", controllers.LoginHandler)
+		}
+
+		productsGroup := v1.Group("/products")
+		{
+			productsGroup.GET("", controllers.GetAllProductsHandler)
+			productsGroup.POST("", controllers.CreateProductsHandler)
+			productsGroup.GET("/:id", controllers.GetOneData)
+			productsGroup.PATCH("/:id", controllers.UpdateProductHandler)
+			productsGroup.DELETE("/:id", controllers.DeleteProductHandler)
+		}
+
+		uploadsGroup := v1.Group("/uploads")
+		{
+			uploadsGroup.GET("/images/product/:filename", controllers.LoadImageProduct)
+		}
+	}
 	return r
 }

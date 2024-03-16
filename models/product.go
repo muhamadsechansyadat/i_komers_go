@@ -16,7 +16,7 @@ type Product struct {
 	Name         string      `json:"name" binding:"required"`
 	Slug         string      `json:"slug"`
 	Price        float64     `json:"price" gorm:"type:decimal(10,2);not null"`
-	PhotoProduct *string     `json:"photo_product"`
+	PhotoProduct string      `json:"photo_product"`
 	Description  string      `json:"description"`
 	Type         ProductType `json:"type"`
 	CreatedAt    time.Time   `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`

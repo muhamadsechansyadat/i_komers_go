@@ -36,7 +36,9 @@ func ParseFieldError(e validator.FieldError) string {
 	tag := strings.Split(e.Tag(), "|")[0]
 	switch tag {
 	case "required":
-		return fmt.Sprintf("%s is required if %s", fieldPrefix, e.Param())
+		return fmt.Sprintf("%s is required %s", fieldPrefix, e.Param())
+	case "oneof":
+		return fmt.Sprintf("%s must be %s", fieldPrefix, e.Param())
 	case "lt", "ltfield":
 		param := e.Param()
 		if param == "" {
