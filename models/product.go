@@ -19,6 +19,7 @@ type Product struct {
 	PhotoProduct string      `json:"photo_product"`
 	Description  string      `json:"description"`
 	Type         ProductType `json:"type"`
+	Sizes        []Size      `json:"sizes" gorm:"foreignkey:ProductID"`
 	CreatedAt    time.Time   `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt    time.Time   `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
 }

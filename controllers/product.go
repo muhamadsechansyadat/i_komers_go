@@ -10,6 +10,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"github.com/jinzhu/gorm"
 )
 
@@ -44,8 +45,12 @@ func CreateProductsHandler(c *gin.Context) {
 
 	// Binding form-data request and validating the required fields
 	if err := c.ShouldBind(&input); err != nil {
-		errors := helpers.ParseError(err)
-		helpers.ErrorWithDataJSON(c, "errors", errors)
+		if validationErr, ok := err.(validator.ValidationErrors); ok {
+			errors := helpers.ParseError(validationErr)
+			helpers.HelperErrorWithDataJSON(c, errors)
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "error": err.Error()})
 		return
 	}
 
@@ -161,8 +166,12 @@ func UpdateProductHandler(c *gin.Context) {
 	}
 
 	if err := c.ShouldBind(&input); err != nil {
-		errors := helpers.ParseError(err)
-		helpers.ErrorWithDataJSON(c, "errors", errors)
+		if validationErr, ok := err.(validator.ValidationErrors); ok {
+			errors := helpers.ParseError(validationErr)
+			helpers.HelperErrorWithDataJSON(c, errors)
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "error": err.Error()})
 		return
 	}
 
@@ -237,10 +246,32 @@ func DeleteProductHandler(c *gin.Context) {
 
 	id := c.Param("id")
 
-	if err := db.Model(&models.Product{}).Where("id = ?", id).Update("status", "Y").Error; err != nil {
+	if err := db.Model(&models.Product{}).Where("id = ?", id).Update("status", "N").Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "error": "Failed to mark product as deleted", "details": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"status": "ok", "message": "Product marked as deleted successfully"})
+}
+
+func GetProductWithSizesHandler(c *gin.Context) {
+	db := c.MustGet("db").(*gorm.DB)
+	id := c.Param("id")
+
+	// Mencari produk berdasarkan ID
+	var product models.Product
+	if err := db.Where("id = ?", id).First(&product).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"status": "error", "error": true, "message": "Product not found"})
+		return
+	}
+
+	var sizes []models.Size
+	if err := db.Where("product_id = ? AND (status = ? OR status = ? OR status IS NULL)", id, "", "Y").Find(&sizes).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "error": true, "message": "Failed to retrieve sizes"})
+		return
+	}
+
+	product.Sizes = sizes
+
+	c.JSON(http.StatusOK, gin.H{"status": "ok", "message": "Successfully retrieve product with sizes", "data": product})
 }

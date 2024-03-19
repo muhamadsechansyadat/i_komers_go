@@ -10,6 +10,7 @@ func main() {
 	db := models.SetupDB()
 	db.AutoMigrate(&models.User{})
 	db.AutoMigrate(&models.Product{})
+	db.AutoMigrate(&models.Size{})
 	// database.ChangeVarcharToTextAtProducts()
 	// products := database.AddColumnToTable(db, "products", "status", "VARCHAR", 1, "after", "type")
 	// if products != nil {

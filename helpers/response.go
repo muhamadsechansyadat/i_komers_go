@@ -22,7 +22,6 @@ type ErrorResponse struct {
 type ErrorDataResponse struct {
 	Status  string      `json:"status"`
 	Message string      `json:"message"`
-	Error   bool        `json:"error"`
 	Data    interface{} `json:"data,omitempty"`
 }
 

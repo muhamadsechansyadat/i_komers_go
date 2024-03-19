@@ -17,15 +17,9 @@ func SetupRoutes(db *gorm.DB) *gin.Engine {
 
 	r.GET("/", func(c *gin.Context) {
 		c.Header("Content-Type", "application/json")
-
-		// Send a JSON response with the message "Hello, world"
 		c.JSON(200, gin.H{"message": "Hello, world"})
 	})
 
-	// r.GET("/products", controllers.GetAllProductsHandler)
-	// r.POST("/product", controllers.CreateProductsHandler)
-	// r.GET("/product/:id", controllers.GetOneData)
-	// r.GET("/uploads/images/product/:filename", controllers.LoadImageProduct)
 	v1 := r.Group("/v1")
 	{
 		authGroup := v1.Group("/auth")
@@ -38,9 +32,18 @@ func SetupRoutes(db *gorm.DB) *gin.Engine {
 		{
 			productsGroup.GET("", controllers.GetAllProductsHandler)
 			productsGroup.POST("", controllers.CreateProductsHandler)
-			productsGroup.GET("/:id", controllers.GetOneData)
+			productsGroup.GET("/:id", controllers.GetProductWithSizesHandler)
 			productsGroup.PATCH("/:id", controllers.UpdateProductHandler)
 			productsGroup.DELETE("/:id", controllers.DeleteProductHandler)
+		}
+
+		sizesGroup := v1.Group("/sizes")
+		{
+			sizesGroup.GET("", controllers.GetAllSizesHandler)
+			sizesGroup.POST("", controllers.CreateSizeHandler)
+			sizesGroup.GET("/:id", controllers.GetSizeData)
+			sizesGroup.PATCH("/:id", controllers.UpdateSizeHandler)
+			sizesGroup.DELETE("/:id", controllers.DeleteSizeHandler)
 		}
 
 		uploadsGroup := v1.Group("/uploads")
