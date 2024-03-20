@@ -1,8 +1,11 @@
 package controllers
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+
+	"i_komers_go/config"
 	"i_komers_go/helpers"
 	"i_komers_go/models"
 	"net/http"
@@ -23,12 +26,39 @@ type CreateInput struct {
 }
 
 func GetAllProductsHandler(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
-	var product []models.Product
-	if err := db.Find(&product).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"status": "error", "message": "Product not found"})
+	rdb := config.SetupRedis()
+	redisKey := "products"
+	productsJSON, err := rdb.Get(context.Background(), redisKey).Result()
+	if err == nil {
+		var products []models.Product
+		if err := json.Unmarshal([]byte(productsJSON), &products); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "Failed to unmarshal product data from Redis"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"status":  "ok",
+			"message": "Successfully retrieve product from Redis",
+			"data":    products,
+		})
 		return
 	}
+
+	db := c.MustGet("db").(*gorm.DB)
+
+	var product []models.Product
+	if err := db.Find(&product).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"status": "error", "error": true, "message": "Product not found"})
+		return
+	}
+
+	productsJSONBytes, _ := json.Marshal(product)
+	productsJSON = string(productsJSONBytes)
+	err = rdb.Set(context.Background(), redisKey, productsJSON, 0).Err()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "Failed to save product data to Redis"})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "ok",
 		"message": "Successfully retrieve product",
