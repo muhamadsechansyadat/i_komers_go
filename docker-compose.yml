@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  i_komers_go:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    restart: on-failure
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: "33066"  # Gunakan port 33066 untuk MySQL
+      REDIS_HOST: redis
+      REDIS_PORT: "63790"   # Port default Redis
+    networks:
+      - "mynet"
+
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: "1234567890"
+      MYSQL_DATABASE: "i_komers_db"
+    ports:
+      - "33066:3306"  # Port lokal diubah ke 33066 untuk MySQL
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - "mynet"
+
+  redis:
+    image: redis:latest
+    ports:
+      - "63790:6379"  # Port default Redis
+    networks:
+      - "mynet"
+volumes:
+  mysql_data:
+
+networks:
+  mynet:
+    driver: "bridge"

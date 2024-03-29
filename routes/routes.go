@@ -2,7 +2,7 @@ package routes
 
 import (
 	"i_komers_go/controllers"
-	// "i_komers_go/middleware"
+	"i_komers_go/middleware"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -29,6 +29,7 @@ func SetupRoutes(db *gorm.DB) *gin.Engine {
 		}
 
 		productsGroup := v1.Group("/products")
+		productsGroup.Use(middleware.AuthMiddleware())
 		{
 			productsGroup.GET("", controllers.GetAllProductsHandler)
 			productsGroup.POST("", controllers.CreateProductsHandler)
