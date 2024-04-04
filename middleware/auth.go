@@ -31,7 +31,7 @@ func AuthMiddleware() gin.HandlerFunc {
 				c.Abort()
 				return
 			}
-			c.JSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Bad Request"})
+			c.JSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Token is invalid"})
 			c.Abort()
 			return
 		}
@@ -42,7 +42,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		c.Set("user", &models.User{Username: claims.Username})
+		c.Set("user", &models.User{ID: claims.ID, Username: claims.Username})
 	}
 }
 

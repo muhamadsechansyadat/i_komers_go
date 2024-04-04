@@ -55,7 +55,7 @@ func GetAllProductsHandler(c *gin.Context) {
 	productsJSON = string(productsJSONBytes)
 	err = rdb.Set(context.Background(), redisKey, productsJSON, 0).Err()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "Failed to save product data to Redis"})
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "error": true, "message": "Failed to save product data to Redis"})
 		return
 	}
 

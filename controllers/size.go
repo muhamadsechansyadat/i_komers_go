@@ -47,7 +47,7 @@ func CreateSizeHandler(c *gin.Context) {
 
 	var product models.Product
 	if err := db.Where("id = ?", input.ProductID).First(&product).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "error": "Failed to fetch product", "message": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "error": "Id Product is not valid", "message": err.Error()})
 		return
 	}
 

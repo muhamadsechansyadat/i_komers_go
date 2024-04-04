@@ -11,15 +11,17 @@ import (
 var jwtKey = []byte(os.Getenv("JWT_SECRET_KEY"))
 
 type Claims struct {
+	ID       uint   `json:"id"`
 	Username string `json:"username"`
 	jwt.StandardClaims
 }
 
 func GenerateToken(user models.User) (string, error) {
-	expirationTime := time.Now().Add(5 * time.Minute)
+	expirationTime := time.Now().Add(60 * time.Minute)
 
 	claims := &Claims{
 		Username: user.Username,
+		ID:       user.ID,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},

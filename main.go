@@ -11,6 +11,9 @@ func main() {
 	db.AutoMigrate(&models.User{})
 	db.AutoMigrate(&models.Product{})
 	db.AutoMigrate(&models.Size{})
+	db.AutoMigrate(&models.Cart{})
+	db.AutoMigrate(&models.Order{})
+	db.AutoMigrate(&models.OrderItem{})
 
 	// rdb := config.SetupRedis()
 	// database.ChangeVarcharToTextAtProducts()

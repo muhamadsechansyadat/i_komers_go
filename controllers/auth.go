@@ -4,8 +4,10 @@ import (
 	"i_komers_go/helpers"
 	"i_komers_go/middleware"
 	"i_komers_go/models"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -16,10 +18,16 @@ func RegisterHandler(c *gin.Context) {
 	var registerRequest struct {
 		Username string `json:"username" binding:"required"`
 		Password string `json:"password" binding:"required"`
+		Email    string `json:"email" binding:"required"`
 	}
 
-	if err := c.ShouldBindJSON(&registerRequest); err != nil {
-		helpers.ErrorJSON(c, err.Error())
+	if err := c.ShouldBind(&registerRequest); err != nil {
+		if validationErr, ok := err.(validator.ValidationErrors); ok {
+			errors := helpers.ParseError(validationErr)
+			helpers.HelperErrorWithDataJSON(c, errors)
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"status": "error", "error": err.Error()})
 		return
 	}
 
@@ -38,9 +46,10 @@ func RegisterHandler(c *gin.Context) {
 
 	user.Username = registerRequest.Username
 	user.Password = string(hashedPassword)
+	user.Email = registerRequest.Email
 
 	db.Create(&user)
-	helpers.SuccessStringJSON(c, "User created successfully")
+	c.JSON(http.StatusOK, gin.H{"status": "ok", "message": "User Created successfully"})
 }
 
 func LoginHandler(c *gin.Context) {

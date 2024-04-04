@@ -39,12 +39,28 @@ func SetupRoutes(db *gorm.DB) *gin.Engine {
 		}
 
 		sizesGroup := v1.Group("/sizes")
+		sizesGroup.Use(middleware.AuthMiddleware())
 		{
 			sizesGroup.GET("", controllers.GetAllSizesHandler)
 			sizesGroup.POST("", controllers.CreateSizeHandler)
 			sizesGroup.GET("/:id", controllers.GetSizeData)
 			sizesGroup.PATCH("/:id", controllers.UpdateSizeHandler)
 			sizesGroup.DELETE("/:id", controllers.DeleteSizeHandler)
+		}
+
+		cartsGroup := v1.Group("/carts")
+		cartsGroup.Use(middleware.AuthMiddleware())
+		{
+			cartsGroup.GET("", controllers.GetAllCartsHandler)
+			cartsGroup.POST("", controllers.AddToCartHandler)
+			cartsGroup.GET("count", controllers.CountAllCartsHandler)
+			cartsGroup.DELETE("/:id", controllers.DeleteCartsHandler)
+		}
+
+		ordersGroup := v1.Group("/orders")
+		ordersGroup.Use(middleware.AuthMiddleware())
+		{
+			ordersGroup.POST("", controllers.AddOrderFromSelectedItemsHandler)
 		}
 
 		uploadsGroup := v1.Group("/uploads")
