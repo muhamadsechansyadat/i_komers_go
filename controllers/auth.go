@@ -74,7 +74,7 @@ func LoginHandler(c *gin.Context) {
 
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginRequest.Password))
 	if err != nil {
-		helpers.ErrorJSON(c, "invalid credential 2.")
+		helpers.ErrorJSON(c, "Password does not match.")
 		return
 	}
 
