@@ -18,6 +18,11 @@ type CreateSizeInput struct {
 	ProductID uint   `json:"product_id" form:"product_id" binding:"required"`
 }
 
+// @Summary Get all sizes
+// @Description Get a all sizes
+// @Tags sizes
+// @Success 200 {object} UserResponse
+// @Router /v1/sizes [get]
 func GetAllSizesHandler(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
 	var size []models.Size

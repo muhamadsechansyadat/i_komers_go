@@ -10,4 +10,5 @@ type User struct {
 	PhotoProfile *string   `json:"photo_profile"`
 	CreatedAt    time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt    time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
+	Expiration   string    `json:"expiration"`
 }

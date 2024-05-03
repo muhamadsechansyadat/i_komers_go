@@ -62,11 +62,11 @@ func SetupRoutes(db *gorm.DB) *gin.Engine {
 		{
 			ordersGroup.POST("", controllers.AddOrderFromSelectedItemsHandler)
 		}
+	}
 
-		uploadsGroup := v1.Group("/uploads")
-		{
-			uploadsGroup.GET("/images/product/:filename", controllers.LoadImageProduct)
-		}
+	uploadsGroup := r.Group("/uploads")
+	{
+		uploadsGroup.GET("/images/product/:filename", controllers.LoadImageProduct)
 	}
 	return r
 }

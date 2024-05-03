@@ -25,8 +25,10 @@ func SetupDB() *gorm.DB {
 
 	URL := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", USER, PASS, HOST, PORT, DBNAME)
 	// URL := USER + ":" + PASS + "@tcp(" + HOST + ":" + PORT + ")/" + DBNAME
+	// URL := "sechan:Password@123@tcp(db:3306)/i_komers_go?charset=utf8&parseTime=True&loc=Local"
 	// db, err := gorm.Open("mysql", "root:1234567890@tcp(localhost:33066)/i_komers_db?charset=utf8&parseTime=True&loc=Local&allowPublicKeyRetrieval=true")
 	// db, err := gorm.Open("mysql", "root:1234567890@tcp(localhost:33066)/i_komers_db?charset=utf8&parseTime=True&loc=Local&allowPublicKeyRetrieval=true")
+	fmt.Println(URL)
 
 	db, err := gorm.Open(DBCONNECTION, URL)
 	if err != nil {
